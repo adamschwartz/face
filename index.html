@@ -180,11 +180,78 @@
       } else {
         $new_circle = $circle.prev('circle');
       }
+      if (Math.random() < 0.001) {
+        collapse();
+      }
       if ($new_circle.length) {
         return setTimeout(function(){
           bubble($new_circle, disperse - 1, direction);
         }, 20);
       }
+    }
+
+    var has_been_collapsed = false;
+
+    function collapse() {
+      if (has_been_collapsed === true) {
+        return;
+      }
+      has_been_collapsed = true;
+      $('circle').each(function(){
+        $(this).attr('data-vy', 0)
+        $(this).attr('data-ay', 6)
+        $(this).attr('data-original-cy', $(this).attr('cy'))
+      });
+      function step(frame, forward) {
+        $('circle').each(function(i,el){
+          var y = parseFloat($(this).attr('cy'), 10),
+              vy = parseFloat($(this).attr('data-vy'), 10),
+              ay = parseFloat($(this).attr('data-ay'), 10),
+              bottom = 730 - parseFloat($(this).attr('r'), 10),
+              original_y = parseFloat($(this).attr('data-original-cy'), 10)
+          ;
+
+          vy = vy + ay; //gravity
+          vy = vy * 0.982;
+
+          y = parseFloat(y + vy, 10);
+
+          if (forward) {
+            if (y > bottom) {
+              y = bottom;
+              vy = -vy;
+            }
+          } else {
+            if (y < original_y) {
+              ay = Math.abs(ay);
+            } else {
+              ay = Math.abs(ay) * -1;
+            }
+            vy = vy * 0.7;
+          }
+
+          if (frame === 100) {
+            vy = 0;
+            ay = ay * -0.8;
+          }
+
+          $(this).attr('data-vy', vy);
+          $(this).attr('cy', y);
+          $(this).attr('data-ay', ay);
+        });
+        if (frame === 100) {
+          return step(frame + 1, !forward);
+        }
+        if (frame >= 250) {
+          has_been_collapsed = false;
+          return;
+        }
+        setTimeout(function(){
+          step(frame + 1, forward);
+        }, 40);
+      }
+      var forward = true;
+      step(1, forward);
     }
   });
   </script>
