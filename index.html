@@ -139,6 +139,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.js"></script>
   <script type="text/javascript" src="jquery.lettering-0.6.min.js"></script>
+  <script type="text/javascript" src="jquery.easing.1.3.js"></script>
   <script>
   $(function(){
     var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1 || navigator.userAgent.toLowerCase().indexOf('safari') > -1;
@@ -180,8 +181,8 @@
       } else {
         $new_circle = $circle.prev('circle');
       }
-      if (Math.random() < 0.001) {
-        collapse();
+      if (Math.random() < 0.01) {
+        fall();
       }
       if ($new_circle.length) {
         return setTimeout(function(){
@@ -190,68 +191,63 @@
       }
     }
 
-    var has_been_collapsed = false;
+    var falling = false;
 
-    function collapse() {
-      if (has_been_collapsed === true) {
+    function fall() {
+      if (falling) {
         return;
       }
-      has_been_collapsed = true;
+      falling = true;
       $('circle').each(function(){
-        $(this).attr('data-vy', 0)
-        $(this).attr('data-ay', 6)
-        $(this).attr('data-original-cy', $(this).attr('cy'))
-      });
-      function step(frame, forward) {
-        $('circle').each(function(i,el){
-          var y = parseFloat($(this).attr('cy'), 10),
-              vy = parseFloat($(this).attr('data-vy'), 10),
-              ay = parseFloat($(this).attr('data-ay'), 10),
-              bottom = 730 - parseFloat($(this).attr('r'), 10),
-              original_y = parseFloat($(this).attr('data-original-cy'), 10)
-          ;
-
-          vy = vy + ay; //gravity
-          vy = vy * 0.982;
-
-          y = parseFloat(y + vy, 10);
-
-          if (forward) {
-            if (y > bottom) {
-              y = bottom;
-              vy = -vy;
-            }
-          } else {
-            if (y < original_y) {
-              ay = Math.abs(ay);
-            } else {
-              ay = Math.abs(ay) * -1;
-            }
-            vy = vy * 0.7;
-          }
-
-          if (frame === 100) {
-            vy = 0;
-            ay = ay * -0.8;
-          }
-
-          $(this).attr('data-vy', vy);
-          $(this).attr('cy', y);
-          $(this).attr('data-ay', ay);
-        });
-        if (frame === 100) {
-          return step(frame + 1, !forward);
-        }
-        if (frame >= 250) {
-          has_been_collapsed = false;
-          return;
-        }
+        var $c = $(this),
+            y = parseFloat($c.attr('cy'), 10)
+        ;
+        $c.attr('data-original-cy', $c.attr('cy'))
+        var bottom = 730 - parseFloat($c.attr('r'), 10);
         setTimeout(function(){
-          step(frame + 1, forward);
-        }, 40);
+          $({ y: y }).animate({ y: bottom }, {
+            duration: 3000,
+            easing: 'easeOutBounce',
+            step: function(now, fx) {
+              $c.attr('cy', now);
+            }
+          });
+        }, Math.abs(2000 - y));
+      });
+
+      setTimeout(function(){
+        putback();
+      }, 5000);
+    }
+
+    var puttingback = false;
+
+    function putback() {
+      if (puttingback) {
+        return;
       }
-      var forward = true;
-      step(1, forward);
+      puttingback = true;
+      $('circle').each(function(){
+        var $c = $(this),
+            y = parseFloat($c.attr('cy'), 10)
+        ;
+        ;
+        var top = $c.attr('data-original-cy');
+        setTimeout(function(){
+          $({ y: y }).animate({ y: top }, {
+            duration: 3000,
+            easing: 'easeOutElastic',
+            step: function(now, fx) {
+              $c.attr('cy', now);
+            }
+          });
+        }, Math.abs(2000 - top));
+      });
+
+      setTimeout(function(){
+        falling = false;
+        puttingback = false;
+      }, 5000);
     }
   });
   </script>
