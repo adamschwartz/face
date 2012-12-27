@@ -54,6 +54,9 @@ $(function(){
     var falling = false;
 
     function fall() {
+        if (navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
+            return;
+        }
         if (falling) {
             return;
         }
