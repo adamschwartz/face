@@ -5,6 +5,10 @@ $(function(){
 
     if (!is_chrome) {
         $('h1').html('Only viewable in <a href="http://chrome.google.com">Google Chrome</a>.');
+    } else {
+        $('h1').click(function(){
+            location.href = 'https://github.com/adamschwartz/face';
+        });
     }
 
     setTimeout(function(){
