@@ -1,6 +1,6 @@
 ## Face
 
-![Adam faces](https://raw.github.com/adamschwartz/face/master/adam%20faces.png)
+![Adam faces](https://raw.github.com/adamschwartz/face/master/resources/adam%20faces.png)
 
 ### Demo
 
