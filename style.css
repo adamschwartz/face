@@ -144,3 +144,9 @@ h1 {
         overflow: hidden;
     }
 }
+
+svg circle {
+    fill: #444444;
+    stroke: none;
+    stroke-width: 0;
+}
